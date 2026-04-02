@@ -1,0 +1,7 @@
+{
+  "name": "SENTRYA – Intelligent Rural Banking Protection System",
+  "description": "A comprehensive AI-powered platform designed to protect rural banking users from scams through real-time detection, intent verification, and community-driven fraud intelligence.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
