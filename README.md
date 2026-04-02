@@ -3,7 +3,7 @@
 
 ---
 
-## 🚀 Overview
+## Overview
 
 SENTRYA is an intelligent, real-time cybersecurity assistant designed to protect rural digital banking users from scams and fraud.
 
@@ -18,7 +18,7 @@ The system actively intervenes **before financial loss occurs**.
 
 ---
 
-## 🎯 Problem Statement
+## Problem Statement
 
 Digital banking users, especially in rural areas, are vulnerable to:
 
@@ -34,7 +34,7 @@ Existing systems fail because they:
 
 ---
 
-## 💡 Solution
+## Solution
 
 SENTRYA acts as a **real-time security layer** on the user's device that:
 
@@ -46,9 +46,9 @@ SENTRYA acts as a **real-time security layer** on the user's device that:
 
 ---
 
-## 🧠 Core Features
+## Core Features
 
-### 🚨 1. Scam Detection Module
+### 1. Scam Detection Module
 - Monitors incoming SMS
 - Detects keywords like:
   - OTP
@@ -60,7 +60,7 @@ SENTRYA acts as a **real-time security layer** on the user's device that:
 
 ---
 
-### 📊 2. Behavior Analyzer
+### 2. Behavior Analyzer
 - Learns user transaction patterns:
   - Amount range
   - Frequent contacts
@@ -72,7 +72,7 @@ SENTRYA acts as a **real-time security layer** on the user's device that:
 
 ---
 
-### 🤔 3. Intent Verification Module
+### 3. Intent Verification Module
 - Activates during high-risk situations
 - Asks simple questions:
   - “Did someone ask you to send money urgently?”
@@ -81,7 +81,7 @@ SENTRYA acts as a **real-time security layer** on the user's device that:
 
 ---
 
-### ⚙️ 4. Risk Scoring Engine
+### 4. Risk Scoring Engine
 Combines multiple signals:
 
 | Factor | Score |
@@ -99,7 +99,7 @@ Combines multiple signals:
 
 ---
 
-### 🧠 5. Explainable AI Engine
+### 5. Explainable AI Engine
 Provides clear, human-readable explanations:
 
 Example:
@@ -107,14 +107,14 @@ Example:
 
 ---
 
-### 🌐 6. Community Fraud Network
+### 6. Community Fraud Network
 - Shared database of scam numbers
 - Users can report fraud
 - Protects entire community
 
 ---
 
-## 🔄 System Workflow
+## System Workflow
 ```
 Incoming Event (SMS / Call / Transaction)
 ↓
@@ -135,7 +135,7 @@ Community Update
 
 ---
 
-## 📱 Application Features
+## Application Features
 
 - Background monitoring  
 - Real-time alerts  
