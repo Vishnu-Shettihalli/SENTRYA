@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navigate, Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Home, Shield, IndianRupee, Bell, Users, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import ChatAssistant from "./ChatAssistant";
 import { cn } from "../lib/utils";
 
 export default function Layout() {
@@ -30,7 +31,7 @@ export default function Layout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex font-sans selection:bg-brand-200">
+    <div className="min-h-screen bg-[#F8FAFC] flex font-sans selection:bg-brand-200 relative">
       <aside 
         className={cn(
           "fixed left-0 top-0 bottom-0 bg-white border-r border-slate-100 flex flex-col transition-all duration-300 ease-in-out z-20",
@@ -116,6 +117,8 @@ export default function Layout() {
           <Outlet />
         </div>
       </main>
+      
+      <ChatAssistant />
     </div>
   );
 }

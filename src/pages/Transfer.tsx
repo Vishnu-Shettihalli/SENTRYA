@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IndianRupee, CheckCircle2, XCircle, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import apiClient from "../services/apiClient";
+import { verifyIntent } from "../services/geminiService";
 import { useAuth } from "../context/AuthContext";
 import { cn } from "../lib/utils";
 
@@ -21,21 +22,26 @@ export default function Transfer() {
   const handleVerify = async () => {
     if (!amount || !receiver) return;
     setIsVerifying(true);
-    
-    // Map string answers back to booleans for the backend
-    const payload = {
-        user_id: user?.id || 1,
-        amount: parseFloat(amount),
-        receiver: receiver,
-        answers: {
-            knows_person: answers.includes("I know them personally"),
-            urgency_flag: answers.includes("Someone asked me on a call")
-        }
-    };
 
     try {
-        const res = await apiClient.post('/transaction/initiate', payload);
-        setResult(res.data);
+        const aiResult = await verifyIntent(
+          { amount: parseFloat(amount), receiver },
+          answers
+        );
+
+        setResult({
+          decision: aiResult.isRisky ? "block" : "allow",
+          explanation: aiResult.explanation
+        });
+
+        if (aiResult.isRisky && user?.id) {
+          await apiClient.post('/alerts/', {
+            user_id: user.id,
+            message: `Transfer Blocked: ${aiResult.explanation.substring(0, 50)}...`,
+            risk_level: "high"
+          });
+        }
+        
         setStep(3);
     } catch (e) {
         setResult({ decision: "block", explanation: "System Error. Blocked for safety." });

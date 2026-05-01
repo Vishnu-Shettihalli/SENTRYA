@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Shield, AlertTriangle, CheckCircle2, Info, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import apiClient from "../services/apiClient";
+import { analyzeScam } from "../services/geminiService";
 import { useAuth } from "../context/AuthContext";
 import { cn } from "../lib/utils";
 
@@ -17,11 +18,22 @@ export default function Simulator() {
     setResult(null);
 
     try {
-      const res = await apiClient.post('/scam/detect', {
-          text: input,
-          user_id: user?.id || null
+      // Use Gemini directly for high accuracy
+      const aiResult = await analyzeScam(input);
+      setResult({
+        risk_level: aiResult.riskLevel,
+        explanation: aiResult.explanation,
+        detected_keywords: aiResult.detectedKeywords
       });
-      setResult(res.data);
+
+      // Log alert if dangerous
+      if (aiResult.riskLevel !== "low" && user?.id) {
+        await apiClient.post('/alerts/', {
+          user_id: user.id,
+          message: `Scam Detected: ${aiResult.explanation.substring(0, 50)}...`,
+          risk_level: aiResult.riskLevel
+        });
+      }
     } catch (error) {
       console.error("Scam analysis failed:", error);
       setResult({
