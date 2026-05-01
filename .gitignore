@@ -6,3 +6,17 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Python / Backend
+__pycache__/
+*.py[cod]
+*$py.class
+backend/venv/
+venv/
+*.db
+sentrya.db
+
+# Firebase / IDE
+.firebase/
+.idea/
+.vscode/
