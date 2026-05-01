@@ -12,7 +12,7 @@ export interface ScamAnalysisResult {
 
 export const analyzeScam = async (content: string): Promise<ScamAnalysisResult> => {
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-1.5-flash",
     contents: `Analyze the following communication (Call transcript or SMS) for potential scams targeting rural banking users in India. 
     Content: "${content}"
     
@@ -54,7 +54,7 @@ export const verifyIntent = async (
   userAnswers: string[]
 ): Promise<IntentVerificationResult> => {
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-1.5-flash",
     contents: `Evaluate the risk of a transaction based on user intent.
     Transaction: Sending ₹${transactionDetails.amount} to ${transactionDetails.receiver}.
     User's answers to verification questions: ${userAnswers.join(", ")}
@@ -81,7 +81,7 @@ export const verifyIntent = async (
 
 export const getChatResponse = async (message: string, history: any[] = []) => {
   const chat = ai.chats.create({
-    model: "gemini-3.1-flash-lite-preview",
+    model: "gemini-1.5-flash",
     config: {
       systemInstruction: "You are SENTRYA AI, a helpful and protective banking assistant for rural Indian users. Your goal is to explain banking safety, identify scams, and help users navigate the app in simple language. Support multiple Indian languages (Hindi, Kannada, Telugu, Tamil). IMPORTANT: Always respond in the SAME language the user uses. Keep responses extremely concise and fast.",
     },
@@ -95,7 +95,7 @@ export const getChatResponse = async (message: string, history: any[] = []) => {
 export const generateSpeech = async (text: string) => {
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-tts",
+      model: "gemini-1.5-flash",
       contents: [{ parts: [{ text: text }] }],
       config: {
         responseModalities: [Modality.AUDIO],
