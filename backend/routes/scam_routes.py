@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from .. import schemas, database, auth, models
-from ..ml.scam_shield import analyze_text
+from ..utils.gemini_client import analyze_scam_with_ai
 from ..utils.alert_utils import create_user_alert
 from sqlalchemy.orm import Session
 
@@ -8,15 +8,15 @@ router = APIRouter(prefix="/api/scam", tags=["Scam Detection"])
 
 @router.post("/detect", response_model=schemas.ScamDetectionResponse)
 def detect_scam(request: schemas.ScamDetectionRequest, db: Session = Depends(database.get_db)):
-    analysis = analyze_text(request.text)
+    analysis = analyze_scam_with_ai(request.text)
     
-    if analysis["risk_level"] in ["high", "medium"] and request.user_id is not None:
-        create_user_alert(db, request.user_id, f"Scam Detected: {analysis['explanation']}", analysis["risk_level"])
+    if analysis.get("risk_level") in ["high", "medium"] and request.user_id is not None:
+        create_user_alert(db, request.user_id, f"Scam Detected: {analysis.get('explanation', 'Unknown threat')}", analysis.get("risk_level", "medium"))
         
     return schemas.ScamDetectionResponse(
-        risk_level=analysis["risk_level"],
-        detected_keywords=analysis["detected_keywords"],
-        explanation=analysis["explanation"]
+        risk_level=analysis.get("risk_level", "low"),
+        detected_keywords=analysis.get("detected_keywords", []),
+        explanation=analysis.get("explanation", "Safe")
     )
 
 @router.post("/report")

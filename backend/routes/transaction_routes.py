@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from .. import schemas, database, auth
-from ..ml.intent_engine import verify_transaction_intent
+from ..utils.gemini_client import verify_intent_with_ai
 from ..utils.alert_utils import create_user_alert
 from sqlalchemy.orm import Session
 
@@ -8,20 +8,25 @@ router = APIRouter(prefix="/api/transaction", tags=["Transactions"])
 
 @router.post("/initiate", response_model=schemas.TransactionInitiateResponse)
 def initiate_transaction(request: schemas.TransactionInitiateRequest, db: Session = Depends(database.get_db), current_user = Depends(auth.get_current_user)):
-    result = verify_transaction_intent(
+    answers_list = []
+    if request.answers.knows_person: answers_list.append("I know them personally")
+    else: answers_list.append("I don't know them")
+    
+    if request.answers.urgency_flag: answers_list.append("Someone asked me on a call")
+    else: answers_list.append("No one asked me on a call")
+
+    result = verify_intent_with_ai(
         amount=request.amount,
         receiver=request.receiver,
-        knows_person=request.answers.knows_person,
-        urgency_flag=request.answers.urgency_flag,
-        user_id=request.user_id
+        answers=answers_list
     )
     
-    if result["decision"] == "block":
-        create_user_alert(db, request.user_id, f"Transaction Blocked: {result['explanation']}", "high")
-    elif result["decision"] == "warn":
-        create_user_alert(db, request.user_id, f"Suspicious Transaction Warned: {result['explanation']}", "medium")
+    if result.get("decision") == "block":
+        create_user_alert(db, request.user_id, f"Transaction Blocked: {result.get('explanation', 'Unknown threat')}", "high")
+    elif result.get("decision") == "warn":
+        create_user_alert(db, request.user_id, f"Suspicious Transaction Warned: {result.get('explanation', 'Unknown threat')}", "medium")
     
     return schemas.TransactionInitiateResponse(
-        decision=result["decision"],
-        explanation=result["explanation"]
+        decision=result.get("decision", "allow"),
+        explanation=result.get("explanation", "Transaction processed safely.")
     )

@@ -17,13 +17,29 @@ app.add_middleware(
 )
 
 
-from .routes import auth_routes, scam_routes, transaction_routes, behavior_routes, alert_routes
+from .routes import auth_routes, scam_routes, transaction_routes, behavior_routes, alert_routes, chat_routes
 
 app.include_router(auth_routes.router)
 app.include_router(scam_routes.router)
 app.include_router(transaction_routes.router)
 app.include_router(behavior_routes.router)
 app.include_router(alert_routes.router)
+app.include_router(chat_routes.router)
+
+@app.on_event("startup")
+def seed_db():
+    db = database.SessionLocal()
+    try:
+        # Check if scam reports exist, if not seed one so the UI shows it on Vercel
+        report_count = db.query(models.ScamReport).count()
+        if report_count == 0:
+            seed_report = models.ScamReport(phone_number="+91 9876543210", reported_by=1)
+            db.add(seed_report)
+            db.commit()
+    except Exception:
+        pass
+    finally:
+        db.close()
 
 import os
 from fastapi.responses import FileResponse

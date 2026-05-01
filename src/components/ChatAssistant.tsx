@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageSquare, X, Send, Bot, User, Mic } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getChatResponse, generateSpeech } from "../services/geminiService";
+import apiClient from "../services/apiClient";
 import { cn } from "../lib/utils";
 
 export default function ChatAssistant() {
@@ -30,23 +30,18 @@ export default function ChatAssistant() {
     setIsLoading(true);
 
     try {
-      // Format history for Gemini API
       const history = messages.map(m => ({
         role: m.role,
-        parts: [{ text: m.text }]
+        text: m.text
       }));
       
-      const response = await getChatResponse(userMessage, history);
-      setMessages(prev => [...prev, { role: "model", text: response || "I'm sorry, I couldn't process that." }]);
+      const res = await apiClient.post('/chat/', {
+          message: userMessage,
+          history: history
+      });
       
-      // Auto-play speech for accessibility
-      if (response) {
-        const audioData = await generateSpeech(response);
-        if (audioData) {
-          const audio = new Audio(`data:audio/mp3;base64,${audioData}`);
-          audio.play().catch(e => console.log("Audio autoplay prevented", e));
-        }
-      }
+      setMessages(prev => [...prev, { role: "model", text: res.data.reply || "I'm sorry, I couldn't process that." }]);
+      
     } catch (error) {
       console.error("Chat error:", error);
       setMessages(prev => [...prev, { role: "model", text: "I'm having trouble connecting to my servers right now." }]);
